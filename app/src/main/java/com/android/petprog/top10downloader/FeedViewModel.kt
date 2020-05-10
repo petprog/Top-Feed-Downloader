@@ -28,6 +28,7 @@ class FeedViewModel : ViewModel(), DownloadData.DownloadCallback {
 
     fun downloadUrl(feedUrl: String) {
         Log.d(TAG, "downloadURL() called with url $feedUrl")
+        loading.value = true
         if (cacheUrl != feedUrl) {
             Log.d(TAG, "downloadURL() starting AsyncTask ")
             downloadData = DownloadData(this)
