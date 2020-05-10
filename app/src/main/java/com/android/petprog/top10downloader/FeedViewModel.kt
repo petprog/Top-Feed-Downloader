@@ -8,6 +8,7 @@ import java.util.*
 
 private const val TAG = "FeedViewModel"
 val EMPTY_FEED_LIST: List<FeedEntry> = Collections.emptyList()
+
 class FeedViewModel : ViewModel(), DownloadData.DownloadCallback {
     private var downloadData: DownloadData? = null
     private var cacheUrl = "invalid"
@@ -18,13 +19,15 @@ class FeedViewModel : ViewModel(), DownloadData.DownloadCallback {
     private val title = MutableLiveData<String>()
     val stringTitle: LiveData<String>
         get() = title
+    val loading = MutableLiveData<Boolean>()
 
     init {
         feed.postValue(EMPTY_FEED_LIST)
+        loading.postValue(true)
     }
 
-     fun downloadUrl(feedUrl: String) {
-         Log.d(TAG, "downloadURL() called with url $feedUrl")
+    fun downloadUrl(feedUrl: String) {
+        Log.d(TAG, "downloadURL() called with url $feedUrl")
         if (cacheUrl != feedUrl) {
             Log.d(TAG, "downloadURL() starting AsyncTask ")
             downloadData = DownloadData(this)
@@ -38,6 +41,7 @@ class FeedViewModel : ViewModel(), DownloadData.DownloadCallback {
     }
 
     fun invalidate() {
+        loading.value = true
         cacheUrl = "invalid"
     }
 
@@ -45,6 +49,7 @@ class FeedViewModel : ViewModel(), DownloadData.DownloadCallback {
         Log.d(TAG, "onDataAvailable called")
         feed.value = data
         title.value = titleData
+        loading.value = false
         Log.d(TAG, "onDataAvailable ends")
 
     }

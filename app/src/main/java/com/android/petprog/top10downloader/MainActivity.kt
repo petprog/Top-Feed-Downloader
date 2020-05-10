@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -31,11 +32,29 @@ class MainActivity : AppCompatActivity() {
             feedUrl = savedInstanceState.getString(FEED_URL_STATE, "")
             feedLimit = savedInstanceState.getInt(FEED_LIMIT_STATE)
         }
-        feedViewModel.feedEntries.observe(this, Observer { feedAdapter.setFeedList(it) })
+        refreshLayout.setOnRefreshListener {
+            feedViewModel.invalidate()
+            feedViewModel.downloadUrl(feedUrl.format(feedLimit))
+            refreshLayout.isRefreshing = false
+        }
+
+        feedViewModel.feedEntries.observe(this, Observer { feedList ->
+            xmlListView.visibility = View.VISIBLE
+            feedAdapter.setFeedList(feedList)
+        })
+        feedViewModel.loading.observe(this, Observer { isLoading ->
+            isLoading.let {
+                progressBar.visibility = if (it) View.VISIBLE else View.GONE
+                if (it) {
+                    xmlListView.visibility = View.GONE
+                }
+            }
+        })
         feedViewModel.stringTitle.observe(this, Observer { tvTitle.text = it })
 
         feedViewModel.downloadUrl(feedUrl.format(feedLimit))
         Log.d(TAG, "onCreate() done")
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -89,7 +108,10 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
-            R.id.menuRefresh -> feedViewModel.invalidate()
+            R.id.menuRefresh -> {
+                feedViewModel.invalidate()
+            }
+
             else -> {
                 return super.onOptionsItemSelected(item)
             }
