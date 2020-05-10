@@ -13,6 +13,7 @@ import com.android.petprog.top10downloader.R
 import com.android.petprog.top10downloader.getProgressDrawable
 import com.android.petprog.top10downloader.loadImage
 import com.skyhope.showmoretextview.ShowMoreTextView
+import com.squareup.picasso.Picasso
 
 
 class ViewHolder(v: View) {
@@ -45,10 +46,10 @@ class FeedAdapter(
         viewHolder.tvName.text = currentApp.name
         viewHolder.tvArtist.text = currentApp.artist
         viewHolder.tvSummary.text = currentApp.summary
-        viewHolder.image.loadImage(
-            currentApp.imageURL,
-            getProgressDrawable(parent.context)
-        )
+//        viewHolder.image.loadImage(
+//            currentApp.imageURL,
+//            getProgressDrawable(parent.context)
+//        )
 
         viewHolder.tvSummary.setShowingLine(4)
         viewHolder.tvSummary.addShowMoreText("Show more")
@@ -57,11 +58,11 @@ class FeedAdapter(
         viewHolder.tvSummary.setShowMoreColor(color)
         viewHolder.tvSummary.setShowLessTextColor(color)
 
-//        Picasso.get()
-//            .load(currentApp.imageURL)
-//            .error(R.drawable.baseline_broken_image_black_48)
-//            .placeholder(R.drawable.baseline_image_black_48)
-//            .into(viewHolder.image)
+        Picasso.get()
+            .load(currentApp.imageURL)
+            .error(R.drawable.baseline_broken_image_black_48)
+            .placeholder(getProgressDrawable(parent.context))
+            .into(viewHolder.image)
 
         return view
     }
